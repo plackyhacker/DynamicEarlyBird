@@ -11,7 +11,7 @@ I have been researching different techniques on injecting shellcode into memory 
 
 **PowerShell cradle -> Disable PowerShell Logs -> AMSI Bypass -> Load .Net Harness -> Inject Stage 1 Shellcode**
 
-I had generally been using P/Invoke, and occassionally Syscalls, but I wanted to try out Dynamic Invoke with obfuscation as part of my Anti-Malware evasion startegies.
+I had generally been using P/Invoke, and occassionally Syscalls, but I wanted to try out Dynamic Invoke with obfuscation as part of my Anti-Malware evasion strategies.
 
 ### D/Invoke
 
