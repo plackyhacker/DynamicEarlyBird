@@ -5,40 +5,40 @@ namespace DynamicInvoke
 {
     public static class Encrypt
     {
-        //using XOR for simplicity, these can be any encryption you like
-
-        public static string Encyrpt(byte[] data, string key)
-        {
-            int keyindex = 0;
-            byte[] keybytes = Encoding.UTF8.GetBytes(key);
-            byte[] outbytes = new byte[data.Length];
-
-            for(int i = 0; i < data.Length; i++)
+            public static byte[] Decrypt(string aes_base64, string key)
             {
-                outbytes[i] = (byte)((int)data[i] ^ (int)keybytes[keyindex]);
-                keyindex++;
-                if (keyindex >= keybytes.Length) keyindex = 0;
+                byte[] tempKey = Encoding.ASCII.GetBytes(key);
+                tempKey = SHA256.Create().ComputeHash(tempKey);
+        
+                byte[] data = Convert.FromBase64String(aes_base64);
+        
+                // decrypt data
+                Aes aes = new AesManaged();
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.PKCS7;
+                ICryptoTransform dec = aes.CreateDecryptor(tempKey, SubArray(tempKey, 16));
+        
+                using (MemoryStream msDecrypt = new MemoryStream())
+                {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, dec, CryptoStreamMode.Write))
+                    {
+        
+                        csDecrypt.Write(data, 0, data.Length);
+        
+                        return msDecrypt.ToArray();
+                    }
+                }
             }
-
-            string b64 = Convert.ToBase64String(outbytes);
-            return b64;
-        }
-
-        public static byte[] Decrypt(string b64, string key)
-        {
-            int keyindex = 0;
-            byte[] keybytes = Encoding.UTF8.GetBytes(key);
-            byte[] encodedbytes  = Convert.FromBase64String(b64);
-            byte[] outbytes = new byte[encodedbytes.Length];
-
-            for (int i = 0; i < encodedbytes.Length; i++)
+        
+            static byte[] SubArray(byte[] a, int length)
             {
-                outbytes[i] = (byte)((int)encodedbytes[i] ^ (int)keybytes[keyindex]);
-                keyindex++;
-                if (keyindex >= keybytes.Length) keyindex = 0;
+                byte[] b = new byte[length];
+                for (int i = 0; i < length; i++)
+                {
+                    b[i] = a[i];
+                }
+                return b;
             }
-
-            return outbytes;
         }
     }
 }
