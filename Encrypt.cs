@@ -1,43 +1,59 @@
 using System;
+using System.Security.Cryptography;
 using System.Text;
+using System.IO;
 
 namespace DynamicInvoke
 {
-    public static class Encrypt
+    // https://stackoverflow.com/questions/53653510/c-sharp-aes-encryption-byte-array
+    public static class Crypto
     {
-            public static byte[] Decrypt(string aes_base64, string key)
+
+        public static byte[] Encrypt(byte[] data, byte[] key, byte[] iv)
+        {
+            using (var aes = Aes.Create())
             {
-                byte[] tempKey = Encoding.ASCII.GetBytes(key);
-                tempKey = SHA256.Create().ComputeHash(tempKey);
-        
-                byte[] data = Convert.FromBase64String(aes_base64);
-        
-                // decrypt data
-                Aes aes = new AesManaged();
-                aes.Mode = CipherMode.CBC;
+                aes.KeySize = 128;
+                aes.BlockSize = 128;
                 aes.Padding = PaddingMode.PKCS7;
-                ICryptoTransform dec = aes.CreateDecryptor(tempKey, SubArray(tempKey, 16));
-        
-                using (MemoryStream msDecrypt = new MemoryStream())
+
+                aes.Key = key;
+                aes.IV = iv;
+
+                using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
                 {
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, dec, CryptoStreamMode.Write))
-                    {
-        
-                        csDecrypt.Write(data, 0, data.Length);
-        
-                        return msDecrypt.ToArray();
-                    }
+                    return PerformCryptography(data, encryptor);
                 }
             }
-        
-            static byte[] SubArray(byte[] a, int length)
+        }
+
+        public static byte[] Decrypt(byte[] data, byte[] key, byte[] iv)
+        {
+            using (var aes = Aes.Create())
             {
-                byte[] b = new byte[length];
-                for (int i = 0; i < length; i++)
+                aes.KeySize = 128;
+                aes.BlockSize = 128;
+                aes.Padding = PaddingMode.PKCS7;
+
+                aes.Key = key;
+                aes.IV = iv;
+
+                using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
                 {
-                    b[i] = a[i];
+                    return PerformCryptography(data, decryptor);
                 }
-                return b;
+            }
+        }
+
+        private static byte[] PerformCryptography(byte[] data, ICryptoTransform cryptoTransform)
+        {
+            using (var ms = new MemoryStream())
+            using (var cryptoStream = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write))
+            {
+                cryptoStream.Write(data, 0, data.Length);
+                cryptoStream.FlushFinalBlock();
+
+                return ms.ToArray();
             }
         }
     }
