@@ -39,6 +39,6 @@ There are three classes implementing this example code:
 
 [DInvoke.cs](https://github.com/plackyhacker/DynamicEarlyBird/blob/main/DInvoke.cs): This is where the magic happens, and where we need to declare our delegates.
 
-[Encrypt.cs](https://github.com/plackyhacker/DynamicEarlyBird/blob/main/Encrypt.cs): This is just a very basic XOR implementation, any encryption algorythm could be used.
+[Encrypt.cs](https://github.com/plackyhacker/DynamicEarlyBird/blob/main/Encrypt.cs): ~~This is just a very basic XOR implementation, any encryption algorythm could be used~~. I changed the encryption to use AES, it seems that Defender gets very suspicious with XOR'd strings (I know I would)!
 
 **Enjoy!**
